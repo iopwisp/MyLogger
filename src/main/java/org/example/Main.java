@@ -1,58 +1,78 @@
 package org.example;
 
-import org.example.logger.FileRotator;
 import org.example.logger.LogDispatcher;
 import org.example.logger.MyLogger;
+import org.example.model.LogStructure;
+import org.example.server.LogWebSocketServer;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     public static void main(String[] args) {
-        Thread dispatcherThread = null;
+        BlockingQueue<LogStructure> queue = new LinkedBlockingQueue<>();
+        LogWebSocketServer ws = new LogWebSocketServer(9090);
+
+        ws.start();
+        System.out.println("WebSocket server started on ws://localhost:9090");
+        System.out.println("Open dashboard.html in your browser");
+
+        LogDispatcher dispatcher = new LogDispatcher(queue, ws);
+        MyLogger logger = new MyLogger(dispatcher, queue);
+
+        Thread dispatcherThread = new Thread(dispatcher);
+        dispatcherThread.setName("LogDispatcher");
+        dispatcherThread.start();
 
         try {
-            Path logDir = Paths.get("logs");
-            long maxFileSizeBytes = 10 * 1024 * 1024;
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-            FileRotator rotator = new FileRotator(logDir, maxFileSizeBytes);
-            LogDispatcher dispatcher = new LogDispatcher(rotator);
-            MyLogger logger = new MyLogger(dispatcher);
+        logger.info("Application started successfully");
+        logger.info("Initializing components...");
 
-            dispatcherThread = new Thread(dispatcher, "LogDispatcher-Thread");
-            dispatcherThread.start();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-            logger.info("Application started");
-            logger.debug("Debug information");
-            logger.warn("Warning message");
-            logger.error("Error occurred");
+        logger.warn("Cache response time is slow: 250ms");
+        logger.debug("Loading configuration from config.yml");
+        logger.error("Database connection failed: timeout after 30s");
+        logger.info("Retrying database connection...");
+        logger.warn("Memory usage is high: 85%");
+        logger.debug("Processing request from user: admin");
+        logger.info("Request processed successfully");
 
-            for (int i = 0; i < 100; i++) {
-                logger.info("Processing item " + i);
-                Thread.sleep(10);
-            }
-
-            logger.info("Application finished successfully");
-
-        } catch (Exception ex) {
-            System.err.println("Application error: " + ex.getMessage());
-            ex.getStackTrace();
-        } finally {
-            if (dispatcherThread != null) {
-                try {
-                    LogDispatcher dispatcher = (LogDispatcher)
-                            ((Runnable) dispatcherThread).getClass()
-                                    .getDeclaredField("this$0").get(dispatcherThread);
-
-                    dispatcher.shutdownAndWait(5000);
-
-                    dispatcherThread.join(1000);
-
-                    System.out.println("Logger shutdown completed");
-                } catch (Exception ex) {
-                    System.err.println("Error during shutdown: " + ex.getMessage());
+        for (int i = 0; i < 5; i++) {
+            try {
+                Thread.sleep(2000);
+                logger.info("check #" + (i + 1));
+                if (i == 2) {
+                    logger.warn("Network latency detected: 150ms");
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
             }
         }
+
+        logger.info("Shutting down application");
+        try {
+            dispatcher.shutdownAndWait(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        try {
+            ws.stop(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println("Application stopped");
     }
 }

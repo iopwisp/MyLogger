@@ -1,76 +1,89 @@
 package org.example.logger;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.example.interfaces.FileRotatorInterface;
 import org.example.model.LogStructure;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-@Setter
-@Getter
-public class FileRotator implements FileRotatorInterface {
-
-    private final long maxSizeBytes;
-    private final Path logDir;
+public class FileRotator {
+    private final String basePath;
+    private final long maxFileSize;
     private BufferedWriter writer;
-    private int fileIndex = 0;
-    private long currentFileSize = 0;
+    private long currentSize;
 
-    public FileRotator(Path logDir, long maxSizeBytes) throws IOException {
-        this.logDir = logDir;
-        this.maxSizeBytes = maxSizeBytes;
-
-        if (!Files.exists(logDir)) {
-            Files.createDirectories(logDir);
-        }
-
-        openNewFile();
+    public FileRotator(String basePath, long maxFileSize) {
+        this.basePath = basePath;
+        this.maxFileSize = maxFileSize;
+        this.currentSize = 0;
+        initWriter();
     }
 
-    private void openNewFile() throws IOException {
-        if (writer != null) writer.close();
-        Path file = logDir.resolve("log_%d.txt".formatted(fileIndex++));
-        writer = Files.newBufferedWriter(file
-                , StandardOpenOption.CREATE
-                , StandardOpenOption.APPEND);
-        if (Files.exists(file)) {
-            currentFileSize = Files.size(file);
-        } else {
-            currentFileSize = 0;
+    private void initWriter() {
+        try {
+            Path path = Paths.get(basePath);
+            Files.createDirectories(path.getParent());
+
+            File file = path.toFile();
+            if (file.exists()) {
+                currentSize = file.length();
+            }
+
+            writer = new BufferedWriter(new FileWriter(file, true));
+        } catch (IOException e) {
+            System.err.println("Failed to initialize log file: " + e.getMessage());
         }
     }
 
-    public synchronized void write(LogStructure msg) throws IOException {
+    public synchronized void write(LogStructure log) {
         if (writer == null) {
-            throw new IOException("FileRotator is closed");
+            return;
         }
-        String line = msg.toString();
-        writer.write(line);
-        writer.newLine();
-        writer.flush();
 
-        currentFileSize += line.getBytes().length + System.lineSeparator().length();
+        try {
+            String logLine = log.toString() + System.lineSeparator();
+            writer.write(logLine);
+            writer.flush();
 
-        if (currentFileSize > maxSizeBytes) {
-            openNewFile();
+            currentSize += logLine.getBytes().length;
+
+            if (currentSize >= maxFileSize) {
+                rotate();
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to write log: " + e.getMessage());
         }
     }
 
-    @Override
-    public synchronized void close() throws IOException {
+    private void rotate() throws IOException {
+        close();
+
+        String timestamp = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String rotatedPath = basePath.replace(".log", "_" + timestamp + ".log");
+
+        Path source = Paths.get(basePath);
+        Path target = Paths.get(rotatedPath);
+
+        if (Files.exists(source)) {
+            Files.move(source, target);
+        }
+
+        currentSize = 0;
+        initWriter();
+    }
+
+    public synchronized void close() {
         if (writer != null) {
             try {
-                writer.flush();
                 writer.close();
-            } finally {
-                writer = null;
+            } catch (IOException e) {
+                System.err.println("Failed to close log file: " + e.getMessage());
             }
+            writer = null;
         }
     }
-
 }

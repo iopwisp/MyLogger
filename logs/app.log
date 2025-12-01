@@ -1,0 +1,48 @@
+[2025-12-01 23:30:51.394] [INFO] [main] Application started successfully
+[2025-12-01 23:30:51.394] [INFO] [main] Initializing components...
+[2025-12-01 23:30:51.905] [WARN] [main] Cache response time is slow: 250ms
+[2025-12-01 23:30:51.905] [DEBUG] [main] Loading configuration from config.yml
+[2025-12-01 23:30:51.905] [ERROR] [main] Database connection failed: timeout after 30s
+[2025-12-01 23:30:51.905] [INFO] [main] Retrying database connection...
+[2025-12-01 23:30:51.905] [WARN] [main] Memory usage is high: 85%
+[2025-12-01 23:30:51.905] [DEBUG] [main] Processing request from user: admin
+[2025-12-01 23:30:51.905] [INFO] [main] Request processed successfully
+[2025-12-01 23:30:53.912] [INFO] [main] check #1
+[2025-12-01 23:30:55.917] [INFO] [main] check #2
+[2025-12-01 23:30:57.921] [INFO] [main] check #3
+[2025-12-01 23:30:57.921] [WARN] [main] Network latency detected: 150ms
+[2025-12-01 23:30:59.923] [INFO] [main] check #4
+[2025-12-01 23:31:01.937] [INFO] [main] check #5
+[2025-12-01 23:31:01.937] [INFO] [main] Shutting down application
+[2025-12-01 23:47:20.985] [INFO] [main] Application started successfully
+[2025-12-01 23:47:20.985] [INFO] [main] Initializing components...
+[2025-12-01 23:47:21.497] [WARN] [main] Cache response time is slow: 250ms
+[2025-12-01 23:47:21.497] [DEBUG] [main] Loading configuration from config.yml
+[2025-12-01 23:47:21.497] [ERROR] [main] Database connection failed: timeout after 30s
+[2025-12-01 23:47:21.497] [INFO] [main] Retrying database connection...
+[2025-12-01 23:47:21.497] [WARN] [main] Memory usage is high: 85%
+[2025-12-01 23:47:21.497] [DEBUG] [main] Processing request from user: admin
+[2025-12-01 23:47:21.497] [INFO] [main] Request processed successfully
+[2025-12-01 23:47:23.499] [INFO] [main] check #1
+[2025-12-01 23:47:25.501] [INFO] [main] check #2
+[2025-12-01 23:47:27.516] [INFO] [main] check #3
+[2025-12-01 23:47:27.516] [WARN] [main] Network latency detected: 150ms
+[2025-12-01 23:47:29.525] [INFO] [main] check #4
+[2025-12-01 23:47:31.536] [INFO] [main] check #5
+[2025-12-01 23:47:31.536] [INFO] [main] Shutting down application
+[2025-12-02 00:36:57.277] [INFO] [main] Application started successfully
+[2025-12-02 00:36:57.277] [INFO] [main] Initializing components...
+[2025-12-02 00:36:57.788] [WARN] [main] Cache response time is slow: 250ms
+[2025-12-02 00:36:57.788] [DEBUG] [main] Loading configuration from config.yml
+[2025-12-02 00:36:57.788] [ERROR] [main] Database connection failed: timeout after 30s
+[2025-12-02 00:36:57.788] [INFO] [main] Retrying database connection...
+[2025-12-02 00:36:57.788] [WARN] [main] Memory usage is high: 85%
+[2025-12-02 00:36:57.788] [DEBUG] [main] Processing request from user: admin
+[2025-12-02 00:36:57.788] [INFO] [main] Request processed successfully
+[2025-12-02 00:36:59.803] [INFO] [main] check #1
+[2025-12-02 00:37:01.817] [INFO] [main] check #2
+[2025-12-02 00:37:03.827] [INFO] [main] check #3
+[2025-12-02 00:37:03.827] [WARN] [main] Network latency detected: 150ms
+[2025-12-02 00:37:05.839] [INFO] [main] check #4
+[2025-12-02 00:37:07.840] [INFO] [main] check #5
+[2025-12-02 00:37:07.840] [INFO] [main] Shutting down application

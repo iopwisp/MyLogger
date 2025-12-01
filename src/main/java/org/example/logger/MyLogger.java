@@ -1,25 +1,34 @@
 package org.example.logger;
 
-import lombok.RequiredArgsConstructor;
 import org.example.model.LogLevel;
 import org.example.model.LogStructure;
 
-@RequiredArgsConstructor
+import java.util.concurrent.BlockingQueue;
+
 public class MyLogger {
 
     private final LogDispatcher logDispatcher;
+    private final BlockingQueue<LogStructure> queue;
 
-    public void info(String msg){
-        log(LogLevel.INFO , msg);
+    public MyLogger(LogDispatcher logDispatcher, BlockingQueue<LogStructure> queue) {
+        this.logDispatcher = logDispatcher;
+        this.queue = queue;
     }
-    public void warn(String msg){
-        log(LogLevel.WARN , msg);
+
+    public void info(String msg) {
+        log(LogLevel.INFO, msg);
     }
-    public void error(String msg){
-        log(LogLevel.ERROR , msg);
+
+    public void warn(String msg) {
+        log(LogLevel.WARN, msg);
     }
-    public void debug(String msg){
-        log(LogLevel.DEBUG , msg);
+
+    public void error(String msg) {
+        log(LogLevel.ERROR, msg);
+    }
+
+    public void debug(String msg) {
+        log(LogLevel.DEBUG, msg);
     }
 
     private void log(LogLevel level, String msg) {
@@ -41,5 +50,4 @@ public class MyLogger {
             ex.printStackTrace();
         }
     }
-
 }
